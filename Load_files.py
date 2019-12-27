@@ -22,7 +22,7 @@ def load_zip_file(path, resize):
       This function can load the compression format, '.zip'.
     """
     if type(resize) is not tuple or len(resize) != 2:
-        print("Parameter 'resize' should be tuple and the length should be three.")
+        print("Parameter 'resize' should be tuple and the length should be two.")
         return
     
     dict = {}
