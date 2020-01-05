@@ -1,11 +1,15 @@
 
 # coding: utf-8
-import copy, functools
+import os, copy, functools
 import numpy  as np
 import pandas as pd
 from datetime import datetime
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics         import accuracy_score, f1_score, roc_auc_score, mean_squared_error
+
+def mkdir(path):
+    if not os.path.exists(path):
+        os.mkdir(path)
 
 # カテゴリデータのダミー変数化
 def binary_expand(df_train, df_test, cols, y_col="y"):
