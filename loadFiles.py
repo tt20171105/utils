@@ -1,5 +1,5 @@
 # coding: utf-8
-import os, io, tarfile, zipfile
+import os, io, sys, tarfile, zipfile
 import numpy as np
 from PIL import Image
 
@@ -29,11 +29,17 @@ def load_zip_file(path, resize):
     loaded_num, error_num = 0, 0
     with zipfile.ZipFile(path, 'r') as zf:
         for idx, f in enumerate(zf.namelist()):
-            if f[-3:] not in extentions:
-                label_name  = f[f[:-1].rfind("/")+1:-1]
-                dict[label_name] = np.array([])
-                print("Start loading. Label name is %s." % label_name)
-                continue
+            if float(sys.version[:3]) <= 3.7:
+                if f[-3:] not in extentions:
+                    label_name  = f[f[:-1].rfind("/")+1:-1]
+                    dict[label_name] = np.array([])
+                    print("Start loading. Label name is %s." % label_name)
+                    continue
+            else:
+                label_name  = f[f.find("/")+1:f.find("/")+2]
+                if label_name not in dict.keys():
+                    dict[label_name] = np.array([])
+                    print("Start loading. Label name is %s." % label_name)
             try:
                 img = np.array(Image.open(io.BytesIO(zf.read(f))).resize(resize))
                 dict[label_name] = np.append(dict[label_name], img).reshape(-1, *img.shape)
