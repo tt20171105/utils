@@ -1,4 +1,4 @@
- coding: utf-8
+# coding: utf-8
 import os, copy, functools
 import numpy  as np
 import pandas as pd
@@ -44,14 +44,14 @@ def standardization(df_train, df_test=None, numeric_cols=None):
       This function can do standardization of numerical features.
     """
     
-    def get_object_cols(df):
+    def get_numeric_cols(df):
         return list(df.select_dtypes(include=["int","float"]).columns)
 
     if numeric_cols is None:
         if df_test is not None:
-            numeric_cols = list(set(get_object_cols(df_train) + get_object_cols(df_test)))
+            numeric_cols = list(set(get_numeric_cols(df_train) + get_numeric_cols(df_test)))
         else:
-            numeric_cols = list(set(get_object_cols(df_train)))
+            numeric_cols = list(set(get_numeric_cols(df_train)))
     
     mean   = df_train[numeric_cols].mean()
     std    = df_train[numeric_cols].std()
