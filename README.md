@@ -1,1 +1,1 @@
-# Convenient scripts for machine learning.
+# Convenient scripts for machine learning and statistics.
