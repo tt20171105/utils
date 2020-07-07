@@ -110,3 +110,86 @@ def showStats(df):
                                             'Missing values(%)', 'Values in the biggest category(%)', 'Type'])
     display(df_stats)
 
+def showList(show_list, show_num=50, col=True):
+    """
+      This function can show reshaped List.
+    """
+    
+    reshaped_list = []
+    if show_num < len(show_list):
+        for i in range(0, len(show_list)+show_num, show_num):
+            if len(show_list) < i:
+                break
+            l = sorted(show_list)[i:i+show_num]
+            if len(l)==show_num:
+                reshaped_list.append(l)
+            else:
+                reshaped_list.append(l + [None]*(show_num-len(l)))
+    else:
+        reshaped_list = [sorted(show_list)]
+        
+    df_show_col = pd.DataFrame(reshaped_list)
+    if 0 < df_show_col.shape[1]:
+        display(df_show_col) if col else display(df_show_col.T)
+    else:
+        print("No features")
+
+def featureExtractionCorr(df, thrs=[0.99]):
+    """
+      This function can do feature extraction by correration.
+    """
+    
+    dict_features = {}
+    for thr in thrs:
+        dict_features[str(thr)] = []
+        
+    corr_matrix = df.corr()
+    for i in range(len(corr_matrix.columns)):
+        for j in range(i):
+            for thr in thrs:
+                if thr < abs(corr_matrix.iloc[i, j]):
+                    dict_features[str(thr)].append(corr_matrix.columns[i])
+                    
+    for key, item in dict_features.items():
+        dict_features[key] = sorted(set(dict_features[key]))
+        print(key, "The number of features is %s" % len(dict_features[key]))
+        
+    del corr_matrix
+    return dict_features
+
+def reduceMemUsage(df, verbose=False, y=[]):
+    """
+      This function can reduce memory usage of DataFrame.
+    """
+
+    numerics  = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+    start_mem = df.memory_usage().sum() / 1024**2    
+    for col in df.columns:
+        col_type = df[col].dtypes
+        if (col in y) or (col_type not in numerics):
+            continue
+            
+        c_min = df[col].min()
+        c_max = df[col].max()
+        if str(col_type)[:3] == 'int':
+            if   c_min > np.iinfo(np.int8).min  and c_max < np.iinfo(np.int8).max:
+                df[col] = df[col].astype(np.int8)
+            elif c_min > np.iinfo(np.int16).min and c_max < np.iinfo(np.int16).max:
+                df[col] = df[col].astype(np.int16)
+            elif c_min > np.iinfo(np.int32).min and c_max < np.iinfo(np.int32).max:
+                df[col] = df[col].astype(np.int32)
+            elif c_min > np.iinfo(np.int64).min and c_max < np.iinfo(np.int64).max:
+                df[col] = df[col].astype(np.int64)  
+        else:
+            if   c_min > np.finfo(np.float16).min and c_max < np.finfo(np.float16).max:
+                df[col] = df[col].astype(np.float16)
+            elif c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
+                df[col] = df[col].astype(np.float32)
+            else:
+                df[col] = df[col].astype(np.float64)
+                
+    end_mem = df.memory_usage().sum() / 1024**2
+    if verbose:
+        print('Mem. usage decreased to {:5.2f} Mb ({:.1f}% reduction)'.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
+    return df
+
