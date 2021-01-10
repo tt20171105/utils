@@ -32,7 +32,7 @@ def img2gif(inputs, save_path, duration=60):
             pil_imgs.append(Image.fromarray(np.uint8(img)))
     else:
         for f in os.listdir(inputs):
-            pil_imgs.append(Image.open(path + f))
+            pil_imgs.append(Image.open(inputs + f))
         
     pil_imgs[0].save(save_path, save_all=True, append_images=pil_imgs[1:], optimize=False, duration=duration, loop=0)
     print("Completed.")
