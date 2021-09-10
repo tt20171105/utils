@@ -1,1 +1,1 @@
-# Convenient scripts for machine learning and statistics.
+This repo is for sharing useful codes of machine learning and statistics.
